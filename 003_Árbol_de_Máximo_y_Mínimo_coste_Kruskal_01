@@ -1,0 +1,93 @@
+class UnionFind:
+    def __init__(self, n):
+        self.parent = list(range(n))
+        self.rank = [0] * n
+
+    def find(self, x):
+        if self.parent[x] != x:
+            self.parent[x] = self.find(self.parent[x])
+        return self.parent[x]
+
+    def union(self, x, y):
+        root_x = self.find(x)
+        root_y = self.find(y)
+
+        if root_x != root_y:
+            if self.rank[root_x] < self.rank[root_y]:
+                self.parent[root_x] = root_y
+            elif self.rank[root_x] > self.rank[root_y]:
+                self.parent[root_y] = root_x
+            else:
+                self.parent[root_y] = root_x
+                self.rank[root_x] += 1
+
+
+def minimum_spanning_tree(graph):
+    num_nodes = len(graph)
+    edges = []
+
+    # Generar una lista de aristas con sus pesos
+    for i in range(num_nodes):
+        for j in range(i + 1, num_nodes):
+            if graph[i][j] != 0:
+                edges.append((i, j, graph[i][j]))
+
+    # Ordenar las aristas por peso
+    edges.sort(key=lambda x: x[2])
+
+    mst = []
+    union_find = UnionFind(num_nodes)
+
+    for edge in edges:
+        u, v, weight = edge
+        if union_find.find(u) != union_find.find(v):
+            union_find.union(u, v)
+            mst.append(edge)
+
+    return mst
+
+
+def maximum_spanning_tree(graph):
+    num_nodes = len(graph)
+    edges = []
+
+    # Generar una lista de aristas con sus pesos
+    for i in range(num_nodes):
+        for j in range(i + 1, num_nodes):
+            if graph[i][j] != 0:
+                edges.append((i, j, graph[i][j]))
+
+    # Ordenar las aristas por peso en orden descendente
+    edges.sort(key=lambda x: x[2], reverse=True)
+
+    mst = []
+    union_find = UnionFind(num_nodes)
+
+    for edge in edges:
+        u, v, weight = edge
+        if union_find.find(u) != union_find.find(v):
+            union_find.union(u, v)
+            mst.append(edge)
+
+    return mst
+
+
+# Ejemplo de uso del algoritmo de Kruskal
+graph = [
+    [0, 2, 0, 6, 0],
+    [2, 0, 3, 8, 5],
+    [0, 3, 0, 0, 7],
+    [6, 8, 0, 0, 9],
+    [0, 5, 7, 9, 0],
+]
+
+mst_minimum = minimum_spanning_tree(graph)
+mst_maximum = maximum_spanning_tree(graph)
+
+print("Árbol de Mínimo Coste:")
+for edge in mst_minimum:
+    print(f"Arista: {edge[0]} - {edge[1]}, Peso: {edge[2]}")
+
+print("Árbol de Máximo Coste:")
+for edge in mst_maximum:
+    print(f"Arista: {edge[0]} - {edge[1]}, Peso: {edge[2]}")
